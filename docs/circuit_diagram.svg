@@ -1,0 +1,77 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="540" viewBox="0 0 1000 540">
+  <defs>
+    <style>
+      .wire { fill:none; stroke:#263238; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+      .gate { fill:#e8f0fe; stroke:#2457a7; stroke-width:3; stroke-linejoin:round; }
+      .label { font:18px Arial,sans-serif; fill:#17202a; }
+      .gate-label { font:bold 18px Arial,sans-serif; fill:#17202a; }
+      .fault-label { font:bold 13px Arial,sans-serif; fill:#b42318; }
+      .note { font:15px Arial,sans-serif; fill:#37474f; }
+      .fault { fill:#b42318; stroke:white; stroke-width:1.5; }
+    </style>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#263238"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="540" fill="#ffffff"/>
+  <text x="500" y="35" text-anchor="middle" font-family="Arial" font-size="25" font-weight="bold" fill="#17202a">Mini-ATPG: Combinational Circuit</text>
+  <text x="500" y="65" text-anchor="middle" class="label">Y = (A AND B) OR C</text>
+
+  <!-- A input -->
+  <text x="45" y="145" class="label">A</text>
+  <path class="wire" d="M75 139 H260"/>
+  <circle class="fault" cx="145" cy="139" r="7"/>
+  <text x="112" y="117" class="fault-label">A: SA0/SA1</text>
+
+  <!-- B input -->
+  <text x="45" y="225" class="label">B</text>
+  <path class="wire" d="M75 219 H260"/>
+  <circle class="fault" cx="145" cy="219" r="7"/>
+  <text x="112" y="197" class="fault-label">B: SA0/SA1</text>
+
+  <!-- AND gate -->
+  <path class="gate" d="M260 99 H320 A60 60 0 0 1 320 259 H260 Z"/>
+  <text x="310" y="184" text-anchor="middle" class="gate-label">AND</text>
+
+  <!-- n1 wire: AND output at x=380 to OR input at x=632, y=160 -->
+  <path class="wire" d="M380 179 H632"/>
+  <circle class="fault" cx="470" cy="179" r="7"/>
+  <text x="430" y="157" class="label">n1</text>
+  <text x="415" y="204" class="fault-label">n1: SA0/SA1</text>
+
+  <!-- OR gate body.
+       Its concave input boundary is the quadratic curve:
+       M620 225 Q680 180 620 135.
+       The input wires terminate on this curve at (632,160) and (632,200). -->
+  <path class="gate" d="M620 135
+                         Q680 135 730 180
+                         Q680 225 620 225
+                         Q644 180 620 135 Z"/>
+  <text x="676" y="186" text-anchor="middle" class="gate-label">OR</text>
+
+  <!-- Lower input C: short approach to the lower OR input -->
+  <text x="500" y="280" class="label">C</text>
+  <path class="wire" d="M530 274 H580 L632 200"/>
+  <circle class="fault" cx="545" cy="274" r="7"/>
+  <text x="515" y="302" class="fault-label">C: SA0/SA1</text>
+
+  <!-- Output Y -->
+  <path class="wire" d="M730 180 H875" marker-end="url(#arrow)"/>
+  <circle class="fault" cx="800" cy="180" r="7"/>
+  <text x="760" y="156" class="fault-label">Y: SA0/SA1</text>
+  <text x="895" y="186" class="label">Y</text>
+
+  <!-- Legend -->
+  <rect x="55" y="340" width="890" height="145" rx="12" fill="#f7f9fc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="80" y="372" font-family="Arial" font-size="19" font-weight="bold" fill="#17202a">Fault model and notation</text>
+  <circle class="fault" cx="95" cy="402" r="7"/>
+  <text x="115" y="408" class="note">Red marker = modeled fault site</text>
+  <text x="80" y="438" class="note">SA0 = stuck-at-0 fault</text>
+  <text x="80" y="463" class="note">SA1 = stuck-at-1 fault</text>
+  <text x="520" y="408" class="note">5 signal lines: A, B, C, n1, Y</text>
+  <text x="520" y="438" class="note">2 faults per line = 10 modeled faults</text>
+  <text x="520" y="463" class="note">Coverage applies to this modeled circuit</text>
+  <text x="500" y="515" text-anchor="middle" font-family="Arial" font-size="13" fill="#607d8b">Mini-ATPG educational project | Single stuck-at fault model</text>
+</svg>

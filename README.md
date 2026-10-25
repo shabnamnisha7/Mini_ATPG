@@ -32,6 +32,12 @@ Its Boolean expression is:
 
 \[
 Y = (A \land B) \lor C
+
+
+### Circuit Diagram
+
+![Mini-ATPG circuit diagram](docs/circuit_diagram.svg)
+
 \]
 
 The circuit has three binary inputs: A, B, and C. Therefore, it has \(2^3 = 8\) possible input vectors.

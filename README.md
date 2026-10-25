@@ -2,38 +2,45 @@
 
 ## Overview
 
-Mini-ATPG is a Python-based educational tool that demonstrates digital circuit testing concepts used in Design for Testability (DFT). It evaluates a combinational logic circuit, simulates single stuck-at faults, searches for input vectors that detect those faults, and generates fault coverage reports.
+Mini-ATPG is a Python-based educational tool that demonstrates fundamental concepts in Automatic Test Pattern Generation (ATPG) and Design for Testability (DFT).
 
-The tool also implements a greedy test-set compaction heuristic to select a smaller collection of input vectors that collectively detect the modeled faults.
+It evaluates combinational logic circuits, simulates single stuck-at faults, identifies input vectors that detect those faults, calculates modeled fault coverage, and exports reports as CSV files.
+
+The project also supports configurable circuit definitions loaded from JSON and implements a greedy test-set compaction heuristic.
 
 ## Objectives
 
-- Model a combinational logic circuit using Python.
+- Model combinational logic circuits using Python.
 - Simulate single stuck-at-0 and stuck-at-1 faults.
-- Automatically find input vectors that distinguish faulty circuit behavior from fault-free behavior.
-- Calculate modeled fault coverage.
-- Reduce the number of selected test vectors using a greedy heuristic.
-- Export fault and test-set reports as CSV files.
-- Validate functionality using automated unit tests.
+- Find input vectors that distinguish faulty behavior from fault-free behavior.
+- Calculate fault coverage for the modeled fault set.
+- Reduce the number of test vectors using greedy compaction.
+- Load circuit definitions from JSON files.
+- Export fault reports and compact test sets as CSV files.
+- Validate behavior using automated unit tests.
 
 ## Circuit Under Test
 
-The tool models the following circuit:
+The example circuit implements:
 
 ```text
 n1 = A AND B
 Y  = n1 OR C
 ```
 
-Equivalent Boolean expression:
+Its Boolean expression is:
 
-**Y = (A · B) + C**
+\[
+Y = (A \land B) \lor C
+\]
 
-The circuit has three binary inputs, A, B, and C, producing eight possible input combinations.
+The circuit has three binary inputs: A, B, and C. Therefore, it has \(2^3 = 8\) possible input vectors.
+
+The configurable implementation supports circuits built from AND, OR, and NOT gates, subject to its input-validation and circuit-structure rules.
 
 ## Fault Model
 
-The current implementation models single stuck-at faults on five signals:
+The example circuit models single stuck-at faults on five signals:
 
 - A
 - B
@@ -41,36 +48,43 @@ The current implementation models single stuck-at faults on five signals:
 - n1
 - Y
 
-Each signal is tested for two fault conditions:
+Each signal is tested under two conditions:
 
-- Stuck-at-0
-- Stuck-at-1
+- Stuck-at-0 (SA0)
+- Stuck-at-1 (SA1)
 
-This gives a total of 10 modeled single stuck-at faults.
+This produces 10 modeled single stuck-at faults.
 
-A fault is considered detected when the faulty circuit output differs from the fault-free output for a particular input vector.
+A fault is considered detected when an input vector causes the faulty circuit's output to differ from the fault-free circuit's output.
 
 ## Methodology
 
 1. Evaluate the fault-free circuit.
-2. Generate all eight possible input vectors.
+2. Generate all possible input vectors.
 3. Inject each modeled stuck-at fault.
 4. Compare faulty and fault-free outputs.
-5. Find a detecting vector for each fault, where one exists.
-6. Calculate fault coverage for the modeled fault set.
-7. Apply greedy test-set compaction to select vectors that detect uncovered faults.
-8. Export the results to CSV files.
+5. Identify a detecting vector for each detectable fault.
+6. Calculate fault coverage.
+7. Apply greedy test-set compaction.
+8. Export fault reports and compact test sets to CSV files.
+
+The current implementation uses exhaustive input-vector enumeration. It is intended for educational circuits, not large industrial designs.
 
 ## Greedy Test-Set Compaction
 
-The compaction algorithm repeatedly selects the input vector that detects the largest number of faults not yet covered. It continues until all detectable modeled faults are covered or no remaining vector can detect an uncovered fault.
+The compaction algorithm repeatedly selects the input vector that detects the largest number of currently uncovered faults.
 
-This is a greedy heuristic. It does not guarantee the mathematically minimum test set.
+It continues until all detectable modeled faults are covered or no remaining vector can detect an uncovered fault.
+
+This is a greedy heuristic. It does not guarantee a mathematically minimum test set.
+
+For the example circuit, the observed compact test set contains four vectors and covers all 10 modeled faults.
 
 ## Technologies Used
 
 - Python 3
-- Python standard library: `itertools`, `csv`, `pathlib`, and `unittest`
+- Python standard library: `itertools`, `csv`, `pathlib`, `argparse`, and `unittest`
+- JSON for circuit configuration
 - Visual Studio Code
 - PowerShell
 
@@ -81,69 +95,114 @@ No third-party Python packages are required.
 ```text
 Mini_ATPG/
 ├── README.md
+├── .gitignore
+├── circuits/
+│   └── example_circuit.json
+├── docs/
+├── results/
+│   ├── compact_test_set.csv
+│   ├── configurable_compact_test_set.csv
+│   ├── configurable_fault_report.csv
+│   └── sample_fault_report.csv
 ├── src/
 │   ├── circuit.py
 │   ├── fault_simulator.py
-│   └── test_generator.py
-├── tests/
-│   └── test_atpg.py
-├── results/
-│   ├── sample_fault_report.csv
-│   └── compact_test_set.csv
-└── docs/
+│   ├── test_generator.py
+│   ├── configurable_circuit.py
+│   ├── configurable_fault_simulator.py
+│   └── configurable_test_generator.py
+└── tests/
+    ├── test_atpg.py
+    └── test_configurable_atpg.py
 ```
 
-## How to Run
+## Getting Started
 
-Run the fault and test-pattern generator from the project root:
+### Requirements
+
+- Python 3 installed
+- A terminal such as PowerShell
+
+No external Python packages are required.
+
+### Run the original implementation
+
+From the project root, run:
 
 ```powershell
 python .\src\test_generator.py
 ```
 
-Run the automated unit tests:
+### Run the configurable implementation
+
+The configurable generator loads the example circuit from JSON by default:
+
+```powershell
+python .\src\configurable_test_generator.py
+```
+
+To specify a circuit configuration and output paths:
+
+```powershell
+python .\src\configurable_test_generator.py --circuit .\circuits\example_circuit.json --csv .\results\configurable_fault_report.csv --compact-csv .\results\configurable_compact_test_set.csv
+```
+
+### Run the automated tests
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
 
-## Current Validation Results
+## Validation Results
 
-- Modeled single stuck-at faults: 10
-- Faults detected: 10
-- Modeled fault coverage: 100%
-- Selected vectors in the observed greedy run: 4
-- Uncovered faults in the observed greedy run: 0
-- Automated unit tests passed: 9
+The current example circuit produces the following results:
 
-These are results for the implemented educational circuit model, not measurements from a fabricated chip or an industrial ATPG tool.
+| Metric | Result |
+|---|---:|
+| Primary inputs | 3 |
+| Possible input vectors | 8 |
+| Modeled single stuck-at faults | 10 |
+| Detected modeled faults | 10 |
+| Modeled fault coverage | 100% |
+| Vectors in the observed greedy compact set | 4 |
+| Automated unit tests passed | 38 |
+
+These results apply to the implemented example circuit and its modeled fault set. They are not measurements from fabricated hardware or comparisons against industrial ATPG software.
 
 ## Output Files
 
 ### `results/sample_fault_report.csv`
 
-Contains each modeled fault, its detection status, and a detecting input vector.
+Fault report generated by the original implementation. It records modeled faults, detection status, and detecting vectors.
 
 ### `results/compact_test_set.csv`
 
-Contains the selected input vectors and the faults newly detected by each vector during greedy compaction.
+Compact test set generated by the original implementation.
+
+### `results/configurable_fault_report.csv`
+
+Fault report generated by the configurable implementation.
+
+### `results/configurable_compact_test_set.csv`
+
+Compact test set generated by the configurable implementation, including the number of newly covered faults and the faults associated with each selected vector.
 
 ## Limitations
 
-- Supports one small combinational circuit.
-- Uses exhaustive enumeration of the circuit's input combinations.
-- Models only single stuck-at faults.
-- Does not support sequential circuits, timing faults, scan chains, or physical chip testing.
-- Uses a greedy compaction heuristic rather than an optimal set-cover solver.
-- Has not been compared against a commercial ATPG tool or validated against fabricated hardware.
+- Exhaustive input enumeration becomes impractical as the number of circuit inputs increases.
+- The modeled fault set contains single stuck-at faults only.
+- The configurable implementation supports AND, OR, and NOT gates.
+- Sequential circuits, scan chains, timing faults, and physical chip testing are not supported.
+- Greedy compaction does not guarantee an optimal minimum-size test set.
+- The project has not been validated against fabricated hardware or benchmarked against commercial ATPG tools.
 
 ## Future Improvements
 
-- Support user-defined circuits with multiple logic gates.
-- Add more circuit models and fault types.
+- Add more example circuits and gate types.
 - Visualize circuit structure and fault propagation.
 - Compare greedy compaction with an exact minimum set-cover solution.
-- Integrate Verilog simulation using free EDA tools.
+- Improve reporting of undetectable faults.
+- Explore Verilog simulation and integration with free electronic design automation tools.
 
 ## Author
 
@@ -152,4 +211,4 @@ Electronics and Communication Engineering Student
 
 ## Disclaimer
 
-This project is an educational implementation intended to demonstrate basic ATPG and DFT concepts. It is not a replacement for industrial ATPG software.
+Mini-ATPG is an educational implementation intended to demonstrate basic ATPG and DFT concepts. It is not a replacement for industrial ATPG software.

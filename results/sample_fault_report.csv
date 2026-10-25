@@ -1,0 +1,11 @@
+fault,status,test_vector
+A stuck-at-0,DETECTED,110
+A stuck-at-1,DETECTED,010
+B stuck-at-0,DETECTED,110
+B stuck-at-1,DETECTED,100
+C stuck-at-0,DETECTED,001
+C stuck-at-1,DETECTED,000
+n1 stuck-at-0,DETECTED,110
+n1 stuck-at-1,DETECTED,000
+Y stuck-at-0,DETECTED,001
+Y stuck-at-1,DETECTED,000

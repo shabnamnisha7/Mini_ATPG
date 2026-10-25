@@ -1,0 +1,5 @@
+test_vector,new_faults,faults
+010,4,A stuck-at-1; C stuck-at-1; Y stuck-at-1; n1 stuck-at-1
+110,4,A stuck-at-0; B stuck-at-0; Y stuck-at-0; n1 stuck-at-0
+001,1,C stuck-at-0
+100,1,B stuck-at-1
